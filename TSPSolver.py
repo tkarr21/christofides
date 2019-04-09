@@ -157,6 +157,8 @@ class TSPSolver:
         return minIndex
 
     def hierholzer(self, graph):
+        # Convert undirected graph into a directed graph
+        self.convert_to_dir_graph(graph)
         # Initialize variables
         start_vertex = 0
         circuit = [start_vertex]
@@ -178,6 +180,13 @@ class TSPSolver:
                     circuit.append(curr_path[i])
 
         return circuit
+
+    def convert_to_dir_graph(self, graph):
+        # Loop through every cell and make sure that its inverse cell is equal to it
+        for i in range(len(graph)):
+            for j in range(len(graph)):
+                if graph[i, j] != np.inf and graph[i, j] != graph[j, i]:
+                    graph[j, i] = graph[i, j]
 
     def search_new_vertex(self, graph, u, curr_path, edges_visited, starting_vertex):
         # Loop through all edges that connect to the current vertex (u)
