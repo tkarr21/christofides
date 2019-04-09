@@ -140,9 +140,46 @@ class TSPSolver:
                 odds.append(i)
         return odds
 
-
-
     def minTree(self, matrix):
         min_matrix = min_tree(matrix)
         min_matrix = min_matrix.toarray().astype(float)
         return min_matrix
+
+    def hierholzer(self, graph):
+        # Initialize variables
+        start_vertex = 0
+        circuit = [start_vertex]
+        edges_visited = {}
+        # Loop through all edges that connect to the starting vertex
+        for v in graph[start_vertex]:
+            # If an edge exists and it hasn't been visited
+            if graph[start_vertex][v] != np.inf and (start_vertex, v) not in edges_visited:
+                # Mark as visited
+                edges_visited.append((start_vertex, v))
+                edges_visited.append((v, start_vertex))
+                # Add it to the circuit
+                circuit.append(v)
+                # Initialize current path to be updated from following the edge to the next vertex
+                curr_path = []
+                self.search_new_vertex(graph, v, curr_path, edges_visited, start_vertex)
+                # add the new path to the current circuit
+                for i in range(len(curr_path)):
+                    circuit.append(curr_path[i])
+
+        return circuit
+
+    def search_new_vertex(self, graph, u, curr_path, edges_visited, starting_vertex):
+        # Loop through all edges that connect to the current vertex (u)
+        for v in graph[u]:
+            # If an edge exists and it hasn't been visited
+            if graph[u][v] != np.inf and (u, v) not in edges_visited:
+                # Mark as visited
+                edges_visited.append((u, v))
+                edges_visited.append((v, u))
+                # Add it to the current path
+                curr_path.append(v)
+                # If we have completed the circuit, return; else, keep searching until the circuit is completed
+                if v == starting_vertex:
+                    return
+                else:
+                    self.search_new_vertex(graph, v, curr_path, edges_visited, starting_vertex)
