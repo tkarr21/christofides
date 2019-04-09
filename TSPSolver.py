@@ -114,6 +114,8 @@ class TSPSolver:
         perfect = self.perfectMatch(odd_verts,initial_matrix.copy(), min_tree)
         multigraph = self.multigraph(min_tree,perfect)
         print(multigraph)
+        euclidGraph = self.hierholzer(multigraph)
+        print(euclidGraph)
 
     def generateInitialMatrix(self):
         i = 0
@@ -149,9 +151,9 @@ class TSPSolver:
         # Initialize variables
         start_vertex = 0
         circuit = [start_vertex]
-        edges_visited = {}
+        edges_visited = []
         # Loop through all edges that connect to the starting vertex
-        for v in graph[start_vertex]:
+        for v in range(graph.shape[0]):
             # If an edge exists and it hasn't been visited
             if graph[start_vertex][v] != np.inf and (start_vertex, v) not in edges_visited:
                 # Mark as visited
@@ -170,7 +172,7 @@ class TSPSolver:
 
     def search_new_vertex(self, graph, u, curr_path, edges_visited, starting_vertex):
         # Loop through all edges that connect to the current vertex (u)
-        for v in graph[u]:
+        for v in range(graph.shape[0]):
             # If an edge exists and it hasn't been visited
             if graph[u][v] != np.inf and (u, v) not in edges_visited:
                 # Mark as visited
@@ -237,4 +239,9 @@ class TSPSolver:
             return False
 
     def multigraph(self, matrix, perfectMatrix):
-        return matrix + perfectMatrix
+        newmatrix = matrix + perfectMatrix
+        for i in range(newmatrix.shape[0]):
+            for j in range(newmatrix.shape[0]):
+                if newmatrix[i][j] == 0:
+                    newmatrix[i][j] = np.inf
+        return newmatrix
