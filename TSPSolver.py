@@ -111,8 +111,9 @@ class TSPSolver:
         initial_matrix = self.generateInitialMatrix()
         min_tree = self.minTree(initial_matrix)
         odd_verts = self.getOddVerts(min_tree)
-        print (min_tree)
-        print (odd_verts)
+        perfect = self.perfectMatch(odd_verts,initial_matrix.copy(), min_tree)
+        multigraph = self.multigraph(min_tree,perfect)
+        print(multigraph)
 
     def generateInitialMatrix(self):
         i = 0
@@ -136,7 +137,6 @@ class TSPSolver:
                 if matrix[k, i] > 0:
                     size += 1
             if (size % 2) != 0:
-                print(size)
                 odds.append(i)
         return odds
 
@@ -183,3 +183,48 @@ class TSPSolver:
                     return
                 else:
                     self.search_new_vertex(graph, v, curr_path, edges_visited, starting_vertex)
+
+    def perfectMatch(self, vertices, matrix, minMatrix):
+        newmatrix = np.zeros(matrix.shape)
+        numvertices = len(vertices)
+        for i in range(matrix.shape[0]):
+            if i not in vertices:
+                matrix[i] = math.inf
+                for j in range(matrix.shape[1]):
+                    matrix[j][i] = math.inf
+        while len(vertices) != 0:
+            if len(vertices) == 1:
+                print("this should never happen")
+            else:
+                pos = np.argmin(matrix)
+                cols = matrix.shape[0]
+                y = np.mod(pos, cols)
+                x = pos // matrix.shape[0]
+                if x in vertices and y in vertices:
+                    if minMatrix[x][y] != matrix[x][y]:
+                        vertices.remove(x)
+                        vertices.remove(y)
+                        newmatrix[x][y] = matrix[x][y]
+                    elif minMatrix[y][x] != matrix[y][x]:
+                        vertices.remove(x)
+                        vertices.remove(y)
+                        newmatrix[y][x] = matrix[y][x]
+                    matrix[x][y] = math.inf
+                    matrix[y][x] = math.inf
+                    if self.checkPerfect(newmatrix, numvertices):
+                        return newmatrix
+                else:
+                    matrix[x][y] = math.inf
+                    matrix[y][x] = math.inf
+                    continue
+        return newmatrix
+
+    def checkPerfect(self, matrix, numvertices):
+        min = matrix.max(1)
+        if np.count_nonzero(min) == numvertices // 2:
+            return True
+        else:
+            return False
+
+    def multigraph(self, matrix, perfectMatrix):
+        return matrix + perfectMatrix
