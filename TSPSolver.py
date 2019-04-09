@@ -147,6 +147,15 @@ class TSPSolver:
         min_matrix = min_matrix.toarray().astype(float)
         return min_matrix
 
+    def findMinIndex(self, matrix, row):
+        minIndex = np.inf
+        min = np.inf
+        for i in range(matrix.shape[1]):
+            if matrix[row, i] < min:
+                minIndex = i
+                min = matrix[row, i]
+        return minIndex
+
     def hierholzer(self, graph):
         # Initialize variables
         start_vertex = 0
