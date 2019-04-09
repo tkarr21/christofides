@@ -187,28 +187,36 @@ class TSPSolver:
     def perfectMatch(self, vertices, matrix, minMatrix):
         newmatrix = np.zeros(matrix.shape)
         numvertices = len(vertices)
+        #mark distances to all even degree vertexes as infinity
         for i in range(matrix.shape[0]):
             if i not in vertices:
                 matrix[i] = math.inf
                 for j in range(matrix.shape[1]):
                     matrix[j][i] = math.inf
         while len(vertices) != 0:
+            #there should always be an even number of vertices
             if len(vertices) == 1:
                 print("this should never happen")
             else:
                 pos = np.argmin(matrix)
                 cols = matrix.shape[0]
+                #calculate location of smalelst edge
                 y = np.mod(pos, cols)
                 x = pos // matrix.shape[0]
+                #check if both vertices are in still in contention
                 if x in vertices and y in vertices:
+                    #if a front edge already exists in the min_tree, add a back edge instead
                     if minMatrix[x][y] != matrix[x][y]:
+                        #when a position is found, remove the two vertices from the array
                         vertices.remove(x)
                         vertices.remove(y)
                         newmatrix[x][y] = matrix[x][y]
                     elif minMatrix[y][x] != matrix[y][x]:
+                        #when a position is found, remove the two vertices from the array
                         vertices.remove(x)
                         vertices.remove(y)
                         newmatrix[y][x] = matrix[y][x]
+                    #once a position has been considered, mark it as infinity so that the next one can be found
                     matrix[x][y] = math.inf
                     matrix[y][x] = math.inf
                     if self.checkPerfect(newmatrix, numvertices):
@@ -220,7 +228,9 @@ class TSPSolver:
         return newmatrix
 
     def checkPerfect(self, matrix, numvertices):
+        #get the minimum values of each column
         min = matrix.max(1)
+        #if vertices // 2 edges have been added, it is a perfect match
         if np.count_nonzero(min) == numvertices // 2:
             return True
         else:
