@@ -112,8 +112,8 @@ class TSPSolver:
         min_tree = self.minTree(initial_matrix)
         odd_verts = self.getOddVerts(min_tree)
         perfect = self.perfectMatch(odd_verts,initial_matrix.copy(), min_tree)
-        multigraph = self.multigraph(min_tree,perfect)
-        print(multigraph)
+        multigraph, num_edges = self.multigraph(min_tree,perfect)
+        print(num_edges)
         euclidGraph = self.hierholzer(multigraph)
         print(euclidGraph)
 
@@ -240,8 +240,11 @@ class TSPSolver:
 
     def multigraph(self, matrix, perfectMatrix):
         newmatrix = matrix + perfectMatrix
+        num_edges = 0
         for i in range(newmatrix.shape[0]):
             for j in range(newmatrix.shape[0]):
                 if newmatrix[i][j] == 0:
                     newmatrix[i][j] = np.inf
-        return newmatrix
+                else:
+                    num_edges += 1
+        return newmatrix, num_edges
