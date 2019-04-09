@@ -12,6 +12,7 @@ else:
 import time
 import numpy as np
 from TSPClasses import *
+from scipy.sparse.csgraph import minimum_spanning_tree as min_tree
 import heapq
 import itertools
 
@@ -106,4 +107,42 @@ class TSPSolver:
         pass
 
     def fancy(self, time_allowance=60.0):
-        pass
+        results = {}
+        initial_matrix = self.generateInitialMatrix()
+        min_tree = self.minTree(initial_matrix)
+        odd_verts = self.getOddVerts(min_tree)
+        print (min_tree)
+        print (odd_verts)
+
+    def generateInitialMatrix(self):
+        i = 0
+        j = 0
+        cities = self._scenario.getCities()
+        ncities = len(cities)
+        matrix = np.empty([ncities, ncities])
+        for i in range(ncities):
+            for j in range(ncities):
+                matrix[i, j] = cities[i].costTo(cities[j])
+        return matrix
+
+    def getOddVerts(self, matrix):
+        odds = []
+        for i in range(matrix.shape[0]):
+            size = 0
+            for j in range(matrix.shape[0]):
+                if matrix[i, j] > 0:
+                    size += 1
+            for k in range(matrix.shape[0]):
+                if matrix[k, i] > 0:
+                    size += 1
+            if (size % 2) != 0:
+                print(size)
+                odds.append(i)
+        return odds
+
+
+
+    def minTree(self, matrix):
+        min_matrix = min_tree(matrix)
+        min_matrix = min_matrix.toarray().astype(float)
+        return min_matrix
