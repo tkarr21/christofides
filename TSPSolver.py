@@ -1,11 +1,5 @@
 #!/usr/bin/python3
 
-import itertools
-import heapq
-from scipy.sparse.csgraph import minimum_spanning_tree as min_tree
-from TSPClasses import *
-import numpy as np
-import time
 from which_pyqt import PYQT_VER
 
 if PYQT_VER == 'PYQT5':
@@ -14,6 +8,13 @@ elif PYQT_VER == 'PYQT4':
     from PyQt4.QtCore import QLineF, QPointF
 else:
     raise Exception('Unsupported Version of PyQt: {}'.format(PYQT_VER))
+
+import time
+import numpy as np
+from TSPClasses import *
+from scipy.sparse.csgraph import minimum_spanning_tree as min_tree
+import heapq
+import itertools
 
 
 class TSPSolver:
